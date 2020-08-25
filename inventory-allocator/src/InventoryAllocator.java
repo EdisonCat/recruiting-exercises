@@ -77,14 +77,12 @@ public class InventoryAllocator {
             return ;
         }
 
-        // Stores total number of products that need to be shipped.
-        int total = productList.size();
-
-        // Stores the number of products that have been found enough across warehouses.
-        int count = 0;
+        // Assumes that the amount of product stored across warehouses is enough.
+        boolean enough = true;
 
         // Iterates productList
         for(String productName: this.productList.keySet()) {
+            if(this.productList.get(productName) <= 0) continue;
 
             // Iterates warehouseList
             for(Warehouse warehouse: this.warehouseList) {
@@ -109,13 +107,16 @@ public class InventoryAllocator {
                 }
             }
 
-            // If the amount of a product is 0, which means it has been handled by one or more warehouse,
-            // update variable count.
-            if(this.productList.get(productName) == 0) count++;
+            // If the amount of a product is 0, which means it has been handled by one or more warehouse.
+            // If the amount is NOT 0, all products will NOT be shipped anyway, stop the iteration to save time.
+            if(this.productList.get(productName) != 0) {
+                enough = false;
+                break;
+            }
         }
 
         // If not all products can be fetched across warehouses, all products will not be shipped.
-        if(count != total) {
+        if(!enough) {
             System.out.println("Products will NOT be shipped.");
             this.allocatorInfo.clear();
         }

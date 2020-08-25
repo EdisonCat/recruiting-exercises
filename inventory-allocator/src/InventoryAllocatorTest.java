@@ -28,6 +28,9 @@ public class InventoryAllocatorTest {
     // empty productList
     final static Map<String, Integer> emptyProductList = new HashMap<>();
 
+    // empty productList
+    final static Map<String, Integer> wrongDataProductList = new HashMap<>();
+
     // Add products to inventories and productLists
     static {
         inventory1.put("Apple", 5);
@@ -54,6 +57,10 @@ public class InventoryAllocatorTest {
         specialProductList.put("Banana", 5);
         specialProductList.put("Mango", 1);
 
+        wrongDataProductList.put("Apple", -1);
+        wrongDataProductList.put("Banana", 0);
+        wrongDataProductList.put("Cherry", 1);
+
     }
 
     // Initialize 2 warehouses
@@ -69,8 +76,20 @@ public class InventoryAllocatorTest {
     public void allocatorTestEnoughInventory() {
         System.out.println("Enough Inventory Test(Multi Inventories work together):");
         List<Warehouse> warehouseList = new ArrayList<>(Arrays.asList(warehouse1, warehouse2));
-        InventoryAllocator inventoryAllocator1 = new InventoryAllocator(mediumProductList, warehouseList);
-        inventoryAllocator1.getAllocatorInfo();
+        InventoryAllocator inventoryAllocator = new InventoryAllocator(mediumProductList, warehouseList);
+        inventoryAllocator.getAllocatorInfo();
+    }
+
+    /**
+     * This will test the case where required number of item in productList is invalid, e.g. "Apple" -1, "Banana" 0.
+     * Products with valid required amount will still be shipped.
+     */
+    @Test
+    public void allocatorTestInvalidProduct() {
+        System.out.println("Invalid amount of Item in productList Test(Assumed that products with valid required amount will still be shipped):");
+        List<Warehouse> warehouseList = new ArrayList<>(Arrays.asList(warehouse1, warehouse2));
+        InventoryAllocator inventoryAllocator = new InventoryAllocator(wrongDataProductList, warehouseList);
+        inventoryAllocator.getAllocatorInfo();
     }
 
     /**
@@ -81,8 +100,8 @@ public class InventoryAllocatorTest {
     public void allocatorTestNotEnoughInventory() {
         System.out.println("Not Enough Inventory Test:");
         List<Warehouse> warehouseList = new ArrayList<>(Arrays.asList(warehouse1, warehouse2));
-        InventoryAllocator inventoryAllocator1 = new InventoryAllocator(largeProductList, warehouseList);
-        inventoryAllocator1.getAllocatorInfo();
+        InventoryAllocator inventoryAllocator = new InventoryAllocator(largeProductList, warehouseList);
+        inventoryAllocator.getAllocatorInfo();
     }
 
     /**
@@ -93,12 +112,12 @@ public class InventoryAllocatorTest {
     public void allocatorTestSingleEnoughInventory() {
         System.out.println("Single Enough Inventory Test:");
         List<Warehouse> singleWarehouseList = new ArrayList<>(Collections.singletonList(warehouse1));
-        InventoryAllocator inventoryAllocator1 = new InventoryAllocator(smallProductList, singleWarehouseList);
-        inventoryAllocator1.getAllocatorInfo();
+        InventoryAllocator inventoryAllocator = new InventoryAllocator(smallProductList, singleWarehouseList);
+        inventoryAllocator.getAllocatorInfo();
     }
 
     /**
-     * This will test the case where the product does NOT exist across warehouses.
+     * This will test the case where the product does NOT exist across warehouses, e.g. "Mango".
      * Products will NOT be shipped.
      */
     @Test
@@ -162,6 +181,6 @@ public class InventoryAllocatorTest {
     @Test
     public void allocatorTestBadInputForInventoryAllocator() {
         System.out.println("Bad Input Test for InventoryAllocator:");
-            InventoryAllocator inventoryAllocator = new InventoryAllocator(null, null);
+        InventoryAllocator inventoryAllocator = new InventoryAllocator(null, null);
     }
 }
